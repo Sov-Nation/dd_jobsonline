@@ -1,13 +1,11 @@
 ESX = nil
-local LEO = {'police', 'sheriff', 'state'}
-local copson = {['cops'] = 0, ['police'] = 0, ['sheriff'] = 0, ['state'] = 0}
-local total = 0
-local police = 0
-local sheriff = 0
-local state = 0
+local LEO = {"police", "sheriff", "state"}
+local Emergency = {"police", "sheriff", "state", "ambulance"}
+
+TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 function has_value (tab, val)
-    for index, value in ipairs(tab) do
+    for index, value in pairs(tab) do
         if value == val then
             return true
         end
@@ -15,53 +13,47 @@ function has_value (tab, val)
     return false
 end
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+function has_index (tab, ind)
+    for index, value in pairs(tab) do
+        if index == ind then
+            return true
+        end
+    end
+    return false
+end
 
 Citizen.CreateThread(function()
 	while true do
+		Wait(5000)
+		local jobsOnline = {}
 		local xPlayers = ESX.GetPlayers()
-		Wait(500)
 		for i=1, #xPlayers, 1 do
 			local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-			if has_value(LEO, xPlayer.job.name) then
-				total = total + 1
+			local job = xPlayer.job.name
+			if jobsOnline.total == nil then
+				jobsOnline.total = 1
+			else
+				jobsOnline.total = jobsOnline.total + 1
+			end
+			if has_index(jobsOnline, job) then
+				jobsOnline.job = jobsOnline.job + 1
+			else
+				jobsOnline[job] = 1
 			end
 		end
-		copson['cops'] = total
-		total = 0
 		
-		for i=1, #xPlayers, 1 do
-			local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-			if xPlayer.job.name == 'police' then
-				police = police + 1
+		jobsOnline.cops = 0
+		jobsOnline.emergency = 0
+		
+		for k, v in pairs(jobsOnline) do
+			if has_value(LEO, k) then
+				jobsOnline.cops = jobsOnline.cops + v
+			end
+			if has_value(Emergency, k) then
+				jobsOnline.emergency = jobsOnline.emergency + v
 			end
 		end
-		copson['police'] = police
-		police = 0
 		
-		for i=1, #xPlayers, 1 do
-			local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-			if xPlayer.job.name == 'sheriff' then
-				sheriff = sheriff + 1
-			end
-		end
-		copson['sheriff'] = sheriff
-		sheriff = 0
-		
-		for i=1, #xPlayers, 1 do
-			local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-			if xPlayer.job.name == 'state' then
-				state = state + 1
-			end
-		end
-		copson['state'] = state
-		state = 0
-		
-		-- print('dd_copson:')
-		-- for k, v in pairs(copson) do
-		  -- print(k, v)
-		-- end
-		
-		TriggerClientEvent('dd_copson:update', -1, copson)
+		TriggerClientEvent('dd_jobsonline:update', -1, jobsOnline)
 	end
 end)
