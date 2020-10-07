@@ -1,5 +1,5 @@
-ESX = nil
-local LEO = {"police", "sheriff", "state"}
+ESX 			= nil
+local LEO 		= {"police", "sheriff", "state"}
 local Emergency = {"police", "sheriff", "state", "ambulance"}
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
