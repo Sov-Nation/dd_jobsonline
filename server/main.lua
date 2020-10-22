@@ -36,7 +36,7 @@ Citizen.CreateThread(function()
 				jobsOnline.total = jobsOnline.total + 1
 			end
 			if has_index(jobsOnline, job) then
-				jobsOnline.job = jobsOnline.job + 1
+				jobsOnline[job] = jobsOnline[job] + 1
 			else
 				jobsOnline[job] = 1
 			end
