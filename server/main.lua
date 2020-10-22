@@ -13,15 +13,6 @@ function has_value (tab, val)
     return false
 end
 
-function has_index (tab, ind)
-    for index, value in pairs(tab) do
-        if index == ind then
-            return true
-        end
-    end
-    return false
-end
-
 Citizen.CreateThread(function()
 	while true do
 		Wait(5000)
@@ -35,7 +26,7 @@ Citizen.CreateThread(function()
 			else
 				jobsOnline.total = jobsOnline.total + 1
 			end
-			if has_index(jobsOnline, job) then
+			if jobsOnline[job] ~= nil then
 				jobsOnline[job] = jobsOnline[job] + 1
 			else
 				jobsOnline[job] = 1
